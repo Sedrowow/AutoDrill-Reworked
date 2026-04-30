@@ -26,10 +26,15 @@ jobs:
         java-version: 17
         distribution: temurin
 
+    - name: Set up Android build tools
+      run: |
+        ANDROID_BUILD_TOOLS=$(ls -1 $ANDROID_HOME/build-tools | sort -V | tail -n 1)
+        echo "${ANDROID_HOME}/build-tools/${ANDROID_BUILD_TOOLS}" >> $GITHUB_PATH
+
     - name: Build mod jar
       run: |
         chmod +x ./gradlew
-        ./gradlew jar
+        ./gradlew deploy
 
     - name: Delete old release if exists
       run: gh release delete v157.3 --yes || true
@@ -37,6 +42,6 @@ jobs:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Create GitHub Release with jar
-      run: gh release create v157.3 build/libs/*Desktop.jar --title "AutoDrill Reworked v157.3" --notes "Updated for Mindustry v157.3" --latest
+      run: gh release create v157.3 build/libs/*.jar --title "AutoDrill Reworked v157.3" --notes "Updated for Mindustry v157.3" --latest
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
